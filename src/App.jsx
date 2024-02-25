@@ -1,37 +1,27 @@
 // import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import Upload from "./components/Upload";
-
-function Calculator() {
-  return (
-    <div>
-      <h1>Calculator</h1>
-      {/* Add your calculator component here */}
-    </div>
-  );
-}
-
-function Weather() {
-  return (
-    <div>
-      <h1>Weather</h1>
-      {/* Add your weather component here */}
-    </div>
-  );
-}
+// import Upload from "./components/Upload";
+import UploadEquityBhavCopy from "./components/UploadEquityBhavCopy";
+import DisplayData from "./components/DisplayData";
 
 function App() {
   return (
     <Container>
       <Row>
-        <Col>
+        {/* <Col>
           <Calculator />
-        </Col>
-        <Col>
+        </Col> */}
+        {/* <Col>
           <Weather />
+        </Col> */}
+        {/* <Col>
+          <Upload />
+        </Col> */}
+        <Col>
+          <UploadEquityBhavCopy />
         </Col>
         <Col>
-          <Upload />
+          <DisplayData />
         </Col>
       </Row>
     </Container>

@@ -47,7 +47,7 @@ function Upload() {
     try {
       // const response = await fetch("/api/files/");
       // http://127.0.0.1:8000/uploadData
-      const response = await fetch("http://127.0.0.1:8000/api/uploadData/");
+      const response = await fetch("http://127.0.0.1:8000/api/files/");
       if (!response.ok) {
         throw new Error("Failed to retrieve files");
       }
