@@ -31,8 +31,8 @@ const DisplayData = () => {
     { headerName: "High", field: "HIGH" },
     { headerName: "Close", field: "CLOSE" },
     { headerName: "Volume", field: "VOLUME" },
-    { headerName: "Open_Int", field: "OPEN_INT" },
-    { headerName: "Chg_in_Oi", field: "CHG_IN_OI" },
+    { headerName: "Open Int", field: "OPEN_INT" },
+    { headerName: "Chg In Oi", field: "CHG_IN_OI" },
     { headerName: "Timestamp", field: "TIMESTAMP" },
     // Add more columns as needed
   ];
@@ -44,11 +44,12 @@ const DisplayData = () => {
       className="ag-theme-quartz" // applying the grid theme
       style={{ height: 500 }} // the grid will fill the size of the parent container
     >
+      {/* // detail */}
       <AgGridReact
         rowData={rowData}
         columnDefs={columnDefs}
         pagination={true}
-        paginationPageSize={10}
+        paginationPageSize={100}
       />
     </div>
   );
