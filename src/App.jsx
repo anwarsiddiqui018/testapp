@@ -1,31 +1,18 @@
 // import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-// import Upload from "./components/Upload";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import { Container, Row, Col } from "react-bootstrap";
 import UploadEquityBhavCopy from "./components/UploadEquityBhavCopy";
 import DisplayData from "./components/DisplayData";
+import Upload from "./components/Upload";
 
-function App() {
+export default function App() {
   return (
-    <Container>
-      <Row>
-        {/* <Col>
-          <Calculator />
-        </Col> */}
-        {/* <Col>
-          <Weather />
-        </Col> */}
-        {/* <Col>
-          <Upload />
-        </Col> */}
-        <Col>
-          <UploadEquityBhavCopy />
-        </Col>
-        <Col>
-          <DisplayData />
-        </Col>
-      </Row>
-    </Container>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DisplayData />} />
+        <Route path="upload" element={<UploadEquityBhavCopy />} />
+        <Route path="/test" element={<Upload />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
