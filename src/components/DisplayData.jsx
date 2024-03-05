@@ -2,7 +2,8 @@
 import { AgGridReact } from "ag-grid-react"; // AG Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import "ag-grid-enterprise";
 
 const masterDetail = true;
 const DisplayData = () => {
@@ -10,10 +11,15 @@ const DisplayData = () => {
   const [rowData, setRowData] = useState([]);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [mode, setMode] = useState("light");
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const toggleMode = () => {
+    setMode(mode === "light" ? "dark" : "light");
+  };
 
   const fetchData = async () => {
     try {
@@ -29,14 +35,19 @@ const DisplayData = () => {
     {
       headerName: "Symbol",
       field: "SYMBOL",
+      sort: "asc",
       floatingFilter: true,
       filter: "agSetColumnFilter",
+      sortable: false,
+      // enableRowGroup: true,
+      // rowGroup: true,
+      cellRenderer: "agGroupCellRenderer",
     },
-    { headerName: "Open", field: "OPEN" },
-    { headerName: "High", field: "HIGH" },
-    { headerName: "Close", field: "CLOSE" },
-    { headerName: "Volume", field: "VOLUME" },
-    { headerName: "Open Int", field: "OPEN_INT" },
+    { headerName: "Open", field: "OPEN", sortable: false },
+    { headerName: "High", field: "HIGH", sortable: false },
+    { headerName: "Close", field: "CLOSE", sortable: false },
+    { headerName: "Volume", field: "VOLUME", sortable: false },
+    { headerName: "Open Int", field: "OPEN_INT", sortable: false },
     {
       headerName: "Chg In Oi",
       field: "CHG_IN_OI",
@@ -49,9 +60,25 @@ const DisplayData = () => {
         return <div style={style}>{value}</div>;
       },
     },
-    { headerName: "Timestamp", field: "TIMESTAMP" },
+    { headerName: "Timestamp", field: "TIMESTAMP", sortable: false },
     // Add more columns as needed
   ];
+
+  const detailCellRendererParams = {
+    // provide the Grid Options to use on the Detail Grid
+    detailGridOptions: {
+      columnDefs: [
+        { field: "callId" },
+        { field: "direction" },
+        { field: "number" },
+      ],
+    },
+    // get the rows for each Detail Grid
+    getDetailRowData: (params) => {
+      params.successCallback(params.data.callRecords);
+    },
+  };
+
   const onGridReady = (params) => {
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
@@ -59,9 +86,17 @@ const DisplayData = () => {
   const onFilterTextBoxChanged = (e) => {
     gridApi.setGridOption(e.target.value);
   };
+  const paginationPageSizeSelector = useMemo(() => {
+    return [200, 500, 1000];
+  }, []);
+  const paginationNumberFormatter = useCallback((params) => {
+    return "[" + params.value.toLocaleString() + "]";
+  }, []);
+  const onFirstDataRendered = useCallback((params) => {
+    params.api.paginationGoToPage(4);
+  }, []);
 
   return (
-    // wrapping container with theme & size
     <div
       className="ag-theme-quartz" // applying the grid theme
       style={{ height: "calc(100vh - 20px)", width: "100%" }} // the grid will fill the size of the parent container
@@ -73,12 +108,17 @@ const DisplayData = () => {
         style={{ marginBottom: "10px", width: "10%" }}
       />
       <AgGridReact
+        detailCellRendererParams={detailCellRendererParams}
         rowData={rowData}
         columnDefs={columnDefs}
         masterDetail={masterDetail}
         pagination={true}
-        paginationPageSize={100}
+        paginationPageSize={500}
+        paginationPageSizeSelector={paginationPageSizeSelector}
+        paginationNumberFormatter={paginationNumberFormatter}
         onGridReady={onGridReady}
+        groupUseEntireRow={true}
+        animateRows={true} // Optional: Enable row animations
         sideBar={{
           toolPanels: [
             {
