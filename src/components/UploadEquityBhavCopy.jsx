@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Button, Alert, Spinner, Container, Row, Col } from "react-bootstrap";
+import { Alert, Spinner, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 function UploadEquityBhavCopy() {
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(true);
   const [keepUploadedFile, setKeepUploadedFile] = useState("loading...");
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("No File Selected");
   // eslint-disable-next-line no-unused-vars
   const [success, setSuccess] = useState("");
   //   const [mostRecentDate, setMostRecentDate] = useState("");
+
   const EquityapiDB = "http://127.0.0.1:8000/api/";
   const handleDrop = (event) => {
     event.preventDefault();
@@ -25,7 +26,7 @@ function UploadEquityBhavCopy() {
     const formData = new FormData();
     formData.append("csvFile", file);
     setKeepUploadedFile(file.name);
-    // setStatus("Saving in progress...");
+    setStatus("Saving in progress...");
     setUploading(true);
     try {
       const response = await axios.post(EquityapiDB + "uploadData/", formData);
@@ -37,30 +38,6 @@ function UploadEquityBhavCopy() {
       console.log(error);
     }
   };
-
-  const handleClearDB = async (event) => {
-    event.preventDefault();
-    if (
-      window.confirm("Are you sure : you want to CLEAN Entire DB for Equity?")
-    )
-      try {
-        const response = await axios.get(EquityapiDB + "deleteEquity/");
-        setStatus(response);
-        // handle success
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
-  };
-
-  // const getLatestDate = () => {
-  //   fetch("http://127.0.0.1:8000/latest/created", {
-  //     method: "GET",
-  //     credentials: "include",
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => setMostRecentDate(data["result"]));
-  // };
 
   return (
     <>
@@ -144,9 +121,6 @@ function UploadEquityBhavCopy() {
                 </h3>
               </Alert>
             }
-            <Button variant="danger" onClick={handleClearDB}>
-              Clear DB
-            </Button>
           </Col>
         </Row>
       </Container>

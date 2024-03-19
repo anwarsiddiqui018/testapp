@@ -4,6 +4,7 @@ import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the 
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 import { useState, useEffect, useMemo, useCallback } from "react";
 import "ag-grid-enterprise";
+import moment from "moment";
 
 const masterDetail = true;
 const DisplayData = () => {
@@ -25,12 +26,44 @@ const DisplayData = () => {
     try {
       const data = await fetch("http://127.0.0.1:8000/api/getdata/");
       const json = await data.json();
-      // console.log(json);
-      setRowData(json);
+      console.log("hello mr dj mera gaan", json);
+      // Get today's date
+      const today = new Date();
+
+      // Calculate the date for the previous trading day
+      let targetDate = new Date(today);
+      do {
+        targetDate.setDate(targetDate.getDate() - 1);
+      } while (targetDate.getDay() === 0 || targetDate.getDay() === 6);
+
+      // Filter data for the previous trading day
+      const targetDateData = json.filter((entry) => {
+        const entryDate = new Date(entry.TIMESTAMP);
+        return (
+          entryDate.getDate() === targetDate.getDate() &&
+          entryDate.getMonth() === targetDate.getMonth() &&
+          entryDate.getFullYear() === targetDate.getFullYear()
+        );
+      });
+      console.log("tum ho", targetDateData);
+
+      // Format the fetched data
+      const formattedData = targetDateData.map((item) => ({
+        ...item,
+
+        VOLUME: formatWithCommas(item.VOLUME),
+        OPEN_INT: formatWithCommas(item.OPEN_INT),
+        // Add other numeric fields to format here if needed
+      }));
+      setRowData(formattedData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  const formatWithCommas = (value) => {
+    return value.toLocaleString();
+  };
+
   const columnDefs = [
     {
       headerName: "Symbol",
@@ -55,12 +88,24 @@ const DisplayData = () => {
         const value = params.value;
         const isNegative = value < 0;
         const style = {
-          color: isNegative ? "red" : "black",
+          color: isNegative ? "red" : "white",
         };
         return <div style={style}>{value}</div>;
       },
     },
-    { headerName: "Timestamp", field: "TIMESTAMP", sortable: false },
+    {
+      headerName: "Timestamp",
+      field: "TIMESTAMP",
+      sortable: false,
+      valueFormatter: (params) => {
+        if (params.value) {
+          return moment(params.value).format("YYYY-MM-DD"); // Customize format YYYY-MM-DD
+        } else {
+          return "NA"; // Or a placeholder if no timestamp
+        }
+      },
+      filter: "agSetColumnFilter",
+    },
     // Add more columns as needed
   ];
 
@@ -98,7 +143,7 @@ const DisplayData = () => {
 
   return (
     <div
-      className="ag-theme-quartz" // applying the grid theme
+      className="ag-theme-quartz-dark" // applying the grid theme
       style={{ height: "calc(100vh - 20px)", width: "100%" }} // the grid will fill the size of the parent container
     >
       <input
