@@ -5,6 +5,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied
 import { useState, useEffect, useMemo, useCallback } from "react";
 import "ag-grid-enterprise";
 import moment from "moment";
+import DetailCellRendererParams from "./DetailCellRendererParams";
 
 const masterDetail = true;
 const DisplayData = () => {
@@ -109,21 +110,6 @@ const DisplayData = () => {
     // Add more columns as needed
   ];
 
-  const detailCellRendererParams = {
-    // provide the Grid Options to use on the Detail Grid
-    detailGridOptions: {
-      columnDefs: [
-        { field: "callId" },
-        { field: "direction" },
-        { field: "number" },
-      ],
-    },
-    // get the rows for each Detail Grid
-    getDetailRowData: (params) => {
-      params.successCallback(params.data.callRecords);
-    },
-  };
-
   const onGridReady = (params) => {
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
@@ -153,7 +139,7 @@ const DisplayData = () => {
         style={{ marginBottom: "10px", width: "10%" }}
       />
       <AgGridReact
-        detailCellRendererParams={detailCellRendererParams}
+        detailCellRendererParams={DetailCellRendererParams()} // Corrected prop name and invocation
         rowData={rowData}
         columnDefs={columnDefs}
         masterDetail={masterDetail}
